@@ -141,5 +141,3 @@ while True:
         else:
             language = 'pt'
             print("Comando não reconhecido: " + text_entry)
-
-            print("Não foi possível efetuar a pesquisa")
