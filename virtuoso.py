@@ -6,21 +6,18 @@ import os
 import time
 import serial
 
-# Configurações do dispositivo de áudio
 FORMAT = pyaudio.paInt16
 CHANNELS = 1
-RATE = 16000  # Taxa de amostragem (exemplo de 16 kHz)
-CHUNK = 1024  # Tamanho do buffer
+RATE = 16000
+CHUNK = 1024
 
-while True:  # Loop externo para continuar rodando
+while True:
     recognized = False
     text_entry = ""
 
     while not recognized:
-        # Inicializa o objeto PyAudio
         audio = pyaudio.PyAudio()
 
-        # Abre o stream de áudio
         stream = audio.open(format=FORMAT, channels=CHANNELS,
                             rate=RATE, input=True,
                             frames_per_buffer=CHUNK)
@@ -29,36 +26,29 @@ while True:  # Loop externo para continuar rodando
 
         frames = []
 
-        # Grava áudio por um determinado período (por exemplo, 5 segundos)
         for _ in range(0, int(RATE / CHUNK * 5)):
             data = stream.read(CHUNK)
             frames.append(data)
 
         print("Gravação concluída.")
 
-        # Para a gravação
         stream.stop_stream()
         stream.close()
 
-        # Fecha o objeto PyAudio
         audio.terminate()
 
-        # Salva a gravação em um arquivo WAV
         with wave.open("audio-input.wav", "wb") as wf:
             wf.setnchannels(CHANNELS)
             wf.setsampwidth(audio.get_sample_size(FORMAT))
             wf.setframerate(RATE)
             wf.writeframes(b"".join(frames))
 
-        # Inicializa o reconhecedor de fala
         recognizer = sr.Recognizer()
         languageCode = "pt-BR"
         try:
-            # Lê o áudio do arquivo gravado
             with sr.AudioFile("audio-input.wav") as source:
                 audio_data = recognizer.record(source)
 
-            # Reconhece a fala usando o Google Web Speech API
             text_entry = recognizer.recognize_google(
                 audio_data, language=languageCode)
             print("Texto reconhecido: " + text_entry)
@@ -71,18 +61,13 @@ while True:  # Loop externo para continuar rodando
                 "Erro no request ao Google Web Speech API: {0}".format(e))
 
         if text_entry.lower().startswith(("ei virtuoso", "virtuoso", "virtuosa")):
-            # Responde "Ao seu dispor"
 
             print("Ao seu dispor")
 
-            # Inicia nova gravação para a pergunta
-
             text_entry = ""
 
-            # Inicializa o objeto PyAudio para a nova gravação
             audio = pyaudio.PyAudio()
 
-            # Abre o stream de áudio
             stream = audio.open(format=FORMAT, channels=CHANNELS,
                                 rate=RATE, input=True,
                                 frames_per_buffer=CHUNK)
@@ -91,36 +76,30 @@ while True:  # Loop externo para continuar rodando
 
             frames = []
 
-            # Grava áudio por um determinado período (por exemplo, 5 segundos)
             for _ in range(0, int(RATE / CHUNK * 5)):
                 data = stream.read(CHUNK)
                 frames.append(data)
 
             print("Nova gravação concluída.")
 
-            # Para a gravação
             stream.stop_stream()
             stream.close()
 
-            # Fecha o objeto PyAudio
             audio.terminate()
 
-            # Salva a gravação em um arquivo WAV
             with wave.open("question.wav", "wb") as wf:
                 wf.setnchannels(CHANNELS)
                 wf.setsampwidth(audio.get_sample_size(FORMAT))
                 wf.setframerate(RATE)
                 wf.writeframes(b"".join(frames))
 
-            # Inicializa o reconhecedor de fala
             recognizer = sr.Recognizer()
 
             try:
-                # Lê o áudio do arquivo gravado
+
                 with sr.AudioFile("question.wav") as source:
                     audio_data = recognizer.record(source)
 
-                # Reconhece a fala usando o Google Web Speech API
                 text_entry = recognizer.recognize_google(
                     audio_data, language=languageCode)
                 print("Texto reconhecido: " + text_entry)
@@ -151,20 +130,12 @@ while True:  # Loop externo para continuar rodando
                 ser.write(b'L')
                 ai_answer = "Lâmpada desligada"
 
-            # Idioma da resposta a ser reproduzida
             language = 'pt'
-
-            # Ao transmitir o texto e idioma à API, marcamos
-            # slow=False. O que significa que o módulo de
-            # áudio terá uma velocidade maior.
 
             myobj = gTTS(text=ai_answer, lang=language, slow=False)
 
-            # Salva o áudio convertido em um arquivo chamado
-            # output
             myobj.save("audio-output.mp3")
 
-            # Reproduzindo o arquivo convertido
             os.system("audio-output.mp3")
 
         else:
