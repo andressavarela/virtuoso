@@ -25,7 +25,7 @@ while True:  # Loop externo para continuar rodando
                             rate=RATE, input=True,
                             frames_per_buffer=CHUNK)
 
-        print("Aguardando comando 'ei assistente' ou 'assistente'...")
+        print("Aguardando comando 'ei virtuoso' ou 'virtuoso'...")
 
         frames = []
 
@@ -70,7 +70,7 @@ while True:  # Loop externo para continuar rodando
             print(
                 "Erro no request ao Google Web Speech API: {0}".format(e))
 
-        if text_entry.lower().startswith(("ei assistente", "assistente")):
+        if text_entry.lower().startswith(("ei virtuoso", "virtuoso", "virtuosa")):
             # Responde "Ao seu dispor"
 
             print("Ao seu dispor")
@@ -133,24 +133,22 @@ while True:  # Loop externo para continuar rodando
 
             ai_answer = ""
 
-            arduino_port = 'COMX'  # Substitua 'COMX' pela porta serial correta
-            # 9600 é a taxa de baud do Arduino
-            ser = serial.Serial(arduino_port, 9600)
+            ser = serial.Serial("COM6", 9600)
 
             if text_entry.lower().startswith(("quem é você", "o que é você", "o que você é")):
                 ai_answer = "Sou um protótipo de chatbot criado para te auxiliar em simples tarefas e perguntas"
             elif text_entry.lower().startswith(("quem te fez", "quem te criou", "da onde você surgiu")):
                 ai_answer = "Fui desenvolvido pelos estudantes Igor Marques e Andressa Varela, como projeto para a APS de Microcontroladores e IOT"
             elif text_entry.lower().startswith(("Tudo bem?", "tudo bom?", "Como você tá?")):
-                ai_answer = "Tudo está nos conformes do esperado para um programa incompetente como eu"
+                ai_answer = "Tudo está nos conformes do esperado para um programa como eu"
             elif text_entry.lower().startswith(("que horas são", "que horas é", "são que horas agora?")):
                 current_time = time.strftime("%H:%M")
                 ai_answer = f"Agora são {current_time}"
             elif text_entry.lower().startswith(("acenda a lâmpada", "luz acesa", "acende")):
-                ser.write(b'L')
+                ser.write(b'H')
                 ai_answer = "Lâmpada ligada"
             elif text_entry.lower().startswith(("apague a lâmpada", "luz apagada", "desliga", "apaga")):
-                ser.write(b'D')
+                ser.write(b'L')
                 ai_answer = "Lâmpada desligada"
 
             # Idioma da resposta a ser reproduzida
